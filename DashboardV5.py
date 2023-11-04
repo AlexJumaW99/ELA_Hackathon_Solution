@@ -5,6 +5,7 @@ import seaborn as sns
 import base64
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 
 #read in cleaned and formatted datasets
 
@@ -18,35 +19,35 @@ def get_img_as_base64(file):
         data = f.read()
     return base64.b64encode(data).decode()
 
-img = get_img_as_base64('mo-hs2PaEGb6r8-unsplash.jpg')
+# img = get_img_as_base64('mo-hs2PaEGb6r8-unsplash.jpg')
 
 
-page_bg_image = """
-<style>
-[data-testid="stAppViewContainer"] {
-    background-image: url("https://images.unsplash.com/photo-1698414786771-0fa24cabcd0b?auto=format&fit=crop&q=80&w=3024&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-    background-size: cover;
-}
+# page_bg_image = """
+# <style>
+# [data-testid="stAppViewContainer"] {
+#     background-image: url("https://images.unsplash.com/photo-1698414786771-0fa24cabcd0b?auto=format&fit=crop&q=80&w=3024&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+#     background-size: cover;
+# }
 
-[data-testid="stHeader"] {
-    background-color: rgba(0, 0, 0, 0);
-}
+# [data-testid="stHeader"] {
+#     background-color: rgba(0, 0, 0, 0);
+# }
 
-[data-testid="stToolbar"] {
-    right: 2rem;
-}
+# [data-testid="stToolbar"] {
+#     right: 2rem;
+# }
 
-[data-testid="stSidebar"] {
-    background-image: url("https://images.unsplash.com/photo-1698414786771-0fa24cabcd0b?auto=format&fit=crop&q=80&w=3024&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-    background-position: center;
-}
-</style>
+# [data-testid="stSidebar"] {
+#     background-image: url("https://images.unsplash.com/photo-1698414786771-0fa24cabcd0b?auto=format&fit=crop&q=80&w=3024&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+#     background-position: center;
+# }
+# </style>
 
-"""
+# """
 
 
 #inject CSS tag and add unsafe_allow_html
-st.markdown(page_bg_image, unsafe_allow_html=True)
+# st.markdown(page_bg_image, unsafe_allow_html=True)
 
 #DATA CLEANING PART
 values_df = ['All',
@@ -59,16 +60,16 @@ choose_df = st.sidebar.selectbox('Choose an ACAP St. John dataset to Analyse: ',
                                  values_df
                                  )
 
-if choose_df == values_df[0]:
-    df = pd.read_csv('Concatenated_master_dataset.csv')
+# if choose_df == values_df[0]:
+#     df = pd.read_csv('Concatenated_master_dataset.csv')
 
-elif choose_df == values_df[1]:
+if choose_df == values_df[0]:
     df = pd.read_csv('ACAP_Saint_John_Community-Based_Water_Monitoring_Program.csv') #not gonna use parse dates for now
     
-elif choose_df == values_df[2]:
+elif choose_df == values_df[1]:
     df = pd.read_csv('ACAP_Saint_John_Nutrients_in_the_lower_Wolastoq_watershed.csv')
 
-elif choose_df == values_df[3]:
+elif choose_df == values_df[2]:
     df = pd.read_csv('ACAP_Saint_John_Sediment_PAHs.csv')
 
 pd.set_option('display.max_columns', None)
@@ -112,8 +113,23 @@ df.info()
 
 # df = pd.read_csv('cleaned_df.csv')
 # df_pvt = pd.read_csv('cleaned_df_pivot.csv')
-
-
+# unit = {'mg/L':['Dissolved oxygen (DO)','Ammonia','Escherichia coli','Fecal Coliform','Orthophosphate','Total Coliform','Total dissolved solids','Total suspended solids','Dissolved oxygen saturation'],'ppt':[],'°C':['Temperature, water','Temperature, air'],'NTU':['Turbidity'],'uS/cm':['Conductivity']}
+unit = {
+    'Dissolved oxygen (DO)':'mg/L',
+    'Ammonia':'mg/L',
+    'Escherichia coli':'mg/L',
+    'Fecal Coliform':'mg/L',
+    'Orthophosphate':'mg/L',
+    'Total Coliform':'mg/L',
+    'Total dissolved solids':'mg/L',
+    'Total suspended solids':'mg/L',
+    'Dissolved oxygen saturation':'mg/L',
+    'Salinity':'ppt',
+    'Temperature, water':'°C',
+    'Temperature, air':'°C',
+    'Turbidity':'NTU',
+    'Conductivity':'uS/cm',
+    }
 #title of the main page
 st.title('ELA DASHBOARD')
 st.caption('Source: ACAP St. John')
@@ -164,19 +180,38 @@ if choose_visual == 'Line Graph':
         
         #display the dataframe used to make the line graphs
         
+        # with col1:
+        #     st.metric(f'Max {choose_measure}: ', round(df_line[choose_measure].max(),4))
+        #     st.metric(f'Min {choose_measure}: ', round(df_line[choose_measure].min(),4))
+        #     # st.subheader('Table: ')
+        #     # df_line[['MonitoringLocationName', 'ActivityStartDate', choose_measure]]
+            
+        # with col2:
+        #     st.markdown(f'Name of water body: ')
+        #     st.text(str(df_line.MonitoringLocationName.unique()[0]))
+            
+        #     st.metric(f'Mean {choose_measure}: ', round(df_line[choose_measure].mean(),4))
+        #     st.metric(f'Median {choose_measure}: ', round(df_line[choose_measure].median(),4))
+              # col3, col4 = st.columns([2,2])
         with col1:
-            st.metric(f'Max {choose_measure}: ', round(df_line[choose_measure].max(),4))
-            st.metric(f'Min {choose_measure}: ', round(df_line[choose_measure].min(),4))
-            # st.subheader('Table: ')
-            # df_line[['MonitoringLocationName', 'ActivityStartDate', choose_measure]]
-            
-        with col2:
-            st.markdown(f'Name of water body: ')
-            st.text(str(df_line.MonitoringLocationName.unique()[0]))
-            
-            st.metric(f'Mean {choose_measure}: ', round(df_line[choose_measure].mean(),4))
-            st.metric(f'Median {choose_measure}: ', round(df_line[choose_measure].median(),4))
-            
+            for x in unit:
+                if x == choose_measure:
+                    choose_unit =  unit[x]
+            gauge_graph = go.Figure(go.Indicator(
+                mode = 'gauge+number',
+                value = round(df_line[choose_measure].mean(),4),
+                
+                domain = {'x': [0, 1], 'y': [0, 1]},
+                title = {'text': f'{choose_measure} ({choose_unit})'},
+                gauge = {
+                    'axis':{'range':[round(df_line[choose_measure].min(),4),round(df_line[choose_measure].max(),4)]},
+                    'bar': {'color': 'white'},
+                    # 'steps': [
+                    #     {'range': [round(df_line[choose_measure].min(),4), round(df_line[choose_measure].median(),4)], 'color': 'green'},
+                    #     {'range': [round(df_line[choose_measure].median(),4), round(df_line[choose_measure].max(),4)], 'color': 'red'}],
+                        }
+                    ))
+            st.plotly_chart(gauge_graph, use_container_width=True)
 
         # Create a Plotly figure
         fig = px.line(df_line, x='ActivityStartDate', y=choose_measure, labels={choose_measure: f'{choose_measure}'}, title=f'Trend of {choose_measure} over the years')
