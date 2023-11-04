@@ -5,6 +5,8 @@ import seaborn as sns
 import base64
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
+
 
 #read in cleaned and formatted datasets
 
@@ -12,45 +14,44 @@ import plotly.express as px
 
 #ADD A PLUS BUTTON FOR THE LINE GRAPH TO OVERLAY ANOTHER BODY OF WATER FOR COMPARISON PURPOSES
 
-@st.cache_data
-def get_img_as_base64(file):
-    with open(file, 'rb') as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
+# @st.cache_data
+# def get_img_as_base64(file):
+#     with open(file, 'rb') as f:
+#         data = f.read()
+#     return base64.b64encode(data).decode()
 
-img = get_img_as_base64('mo-hs2PaEGb6r8-unsplash.jpg')
+# img = get_img_as_base64('mo-hs2PaEGb6r8-unsplash.jpg')
 
 
-page_bg_image = """
-<style>
-[data-testid="stAppViewContainer"] {
-    background-image: url("https://images.unsplash.com/photo-1698414786771-0fa24cabcd0b?auto=format&fit=crop&q=80&w=3024&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-    background-size: cover;
-}
+# page_bg_image = """
+# <style>
+# [data-testid="stAppViewContainer"] {
+#     background-image: url("https://images.unsplash.com/photo-1698414786771-0fa24cabcd0b?auto=format&fit=crop&q=80&w=3024&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+#     background-size: cover;
+# }
 
-[data-testid="stHeader"] {
-    background-color: rgba(0, 0, 0, 0);
-}
+# [data-testid="stHeader"] {
+#     background-color: rgba(0, 0, 0, 0);
+# }
 
-[data-testid="stToolbar"] {
-    right: 2rem;
-}
+# [data-testid="stToolbar"] {
+#     right: 2rem;
+# }
 
-[data-testid="stSidebar"] {
-    background-image: url("https://images.unsplash.com/photo-1698414786771-0fa24cabcd0b?auto=format&fit=crop&q=80&w=3024&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-    background-position: center;
-}
-</style>
+# [data-testid="stSidebar"] {
+#     background-image: url("https://images.unsplash.com/photo-1698414786771-0fa24cabcd0b?auto=format&fit=crop&q=80&w=3024&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+#     background-position: center;
+# }
+# </style>
 
-"""
+# """
 
 
 #inject CSS tag and add unsafe_allow_html
-st.markdown(page_bg_image, unsafe_allow_html=True)
+# st.markdown(page_bg_image, unsafe_allow_html=True)
 
 #DATA CLEANING PART
-values_df = ['All',
-             'Community-Based Water Monitoring Program',
+values_df = ['Community-Based Water Monitoring Program',
              'Nutrients in the Lower Wolastoq Watershed',
              'Sediment PAHs']
 
@@ -60,15 +61,12 @@ choose_df = st.sidebar.selectbox('Choose an ACAP St. John dataset to Analyse: ',
                                  )
 
 if choose_df == values_df[0]:
-    df = pd.read_csv('Concatenated_master_dataset.csv')
-
-elif choose_df == values_df[1]:
     df = pd.read_csv('ACAP_Saint_John_Community-Based_Water_Monitoring_Program.csv') #not gonna use parse dates for now
     
-elif choose_df == values_df[2]:
+elif choose_df == values_df[1]:
     df = pd.read_csv('ACAP_Saint_John_Nutrients_in_the_lower_Wolastoq_watershed.csv')
 
-elif choose_df == values_df[3]:
+elif choose_df == values_df[2]:
     df = pd.read_csv('ACAP_Saint_John_Sediment_PAHs.csv')
 
 pd.set_option('display.max_columns', None)
@@ -78,7 +76,7 @@ pd.set_option('display.max_rows', 1000)
 df.info()
 
 #keep only the columns that contain at least 5000 values out of the possible 30282
-df = df.dropna(axis=1, thresh=5000)
+# df = df.dropna(axis=1, thresh=5000)
 df.sort_values('MonitoringLocationName', ascending=False).head(11)
 
 #add a year, month and day column to assist with further aggregation in future
@@ -128,8 +126,8 @@ choose_visual = st.sidebar.selectbox(
         'Line Graph',
         'Bar Graph',
         'Scatter Plot',
-        'Pie Chart',
-        'Histogram',
+        # 'Pie Chart',
+        # 'Histogram',
     )
 ) 
 
@@ -160,22 +158,33 @@ if choose_visual == 'Line Graph':
     if choose_timeline == 'All-Time':
         
         #create streamlit columns that we will use later
-        col1, col2 = st.columns([2,2])
+        # col1, col2 = st.columns([2,2])
         
         #display the dataframe used to make the line graphs
-        
-        with col1:
-            st.metric(f'Max {choose_measure}: ', round(df_line[choose_measure].max(),4))
-            st.metric(f'Min {choose_measure}: ', round(df_line[choose_measure].min(),4))
-            # st.subheader('Table: ')
-            # df_line[['MonitoringLocationName', 'ActivityStartDate', choose_measure]]
+        # with col1:
+        #     st.metric(f'Max {choose_measure}: ', round(df_line[choose_measure].max(),4))
+        #     st.metric(f'Min {choose_measure}: ', round(df_line[choose_measure].min(),4))
             
-        with col2:
-            st.markdown(f'Name of water body: ')
-            st.text(str(df_line.MonitoringLocationName.unique()[0]))
+        # with col2:
+        #     st.markdown(f'Name of water body: ')
+        #     st.text(str(df_line.MonitoringLocationName.unique()[0]))
             
-            st.metric(f'Mean {choose_measure}: ', round(df_line[choose_measure].mean(),4))
-            st.metric(f'Median {choose_measure}: ', round(df_line[choose_measure].median(),4))
+        #     st.metric(f'Mean {choose_measure}: ', round(df_line[choose_measure].mean(),4))
+        #     st.metric(f'Median {choose_measure}: ', round(df_line[choose_measure].median(),4))
+
+        col3, col4 = st.columns([2,2])
+        with col3:
+            gauge_graph = go.Figure(go.Indicator(
+                mode = 'gauge+number',
+                value = round(df_line[choose_measure].mean(),4),
+                domain = {'x': [0, 1], 'y': [0, 1]},
+                title = {'text': f'Amount of {choose_measure}'},
+                gauge = {
+                    'axis':{'range':[round(df_line[choose_measure].min(),4),round(df_line[choose_measure].max(),4)]},
+                }
+                ))
+            st.plotly_chart(gauge_graph, use_container_width=True)
+
             
 
         # Create a Plotly figure
@@ -394,15 +403,3 @@ if choose_visual == 'Scatter Plot':
         
         # fig2 = sns.heatmap(df_pvt[df_pvt.MonitoringLocationName == choose_body].corr())
         # st.pyplot(fig2)
-        
-        
-    
-    
-    
-    
-
-
-
-
-
-
