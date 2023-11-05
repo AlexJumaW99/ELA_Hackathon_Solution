@@ -24,7 +24,7 @@ img = get_img_as_base64('mo-hs2PaEGb6r8-unsplash.jpg')
 page_bg_image = """
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://images.unsplash.com/photo-1698414786771-0fa24cabcd0b?auto=format&fit=crop&q=80&w=3024&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+    background-image: url("https://images.unsplash.com/photo-1516132006923-6cf348e5dee2?auto=format&fit=crop&q=80&w=3774&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
     background-size: cover;
 }
 
@@ -49,8 +49,7 @@ page_bg_image = """
 st.markdown(page_bg_image, unsafe_allow_html=True)
 
 #DATA CLEANING PART
-values_df = ['All',
-             'Community-Based Water Monitoring Program',
+values_df = ['Community-Based Water Monitoring Program',
              'Nutrients in the Lower Wolastoq Watershed',
              'Sediment PAHs']
 
@@ -59,16 +58,16 @@ choose_df = st.sidebar.selectbox('Choose an ACAP St. John dataset to Analyse: ',
                                  values_df
                                  )
 
-if choose_df == values_df[0]:
-    df = pd.read_csv('Concatenated_master_dataset.csv')
+# if choose_df == values_df[0]:
+#     df = pd.read_csv('Concatenated_master_dataset.csv')
 
-elif choose_df == values_df[1]:
+if choose_df == values_df[0]:
     df = pd.read_csv('ACAP_Saint_John_Community-Based_Water_Monitoring_Program.csv') #not gonna use parse dates for now
     
-elif choose_df == values_df[2]:
+elif choose_df == values_df[1]:
     df = pd.read_csv('ACAP_Saint_John_Nutrients_in_the_lower_Wolastoq_watershed.csv')
 
-elif choose_df == values_df[3]:
+elif choose_df == values_df[2]:
     df = pd.read_csv('ACAP_Saint_John_Sediment_PAHs.csv')
 
 pd.set_option('display.max_columns', None)
@@ -135,19 +134,50 @@ choose_visual = st.sidebar.selectbox(
 
 if choose_visual == 'Line Graph':
     values_body = list(df_pvt.MonitoringLocationName.unique())
-    choose_body = st.sidebar.selectbox('Choose a body of water:',
-                                    values_body
-    )
+    # choose_body = st.sidebar.selectbox('Choose a body of water:',
+    #                                 values_body
+    # )
+    
+    choose_body = st.sidebar.multiselect('Choose water bodies:',
+                                 values_body,
+                                 df_pvt.MonitoringLocationName.unique()[2:5])
 
-    for w in list(df_pvt.MonitoringLocationName.unique()):
-        if w == choose_body:
-            df_line = df_pvt[df_pvt.MonitoringLocationName == w]
+    # for w in list(df_pvt.MonitoringLocationName.unique()):
+    #     if w == choose_body:
+    #         df_line = df_pvt[df_pvt.MonitoringLocationName == w]
+    
+    # df_line = df_pvt[df_pvt.isin({'MonitoringLocationName': list(choose_body)})]
+    # print(list(choose_body))
+    # df_line
+    
+    df_pvt_filtered = df_pvt['MonitoringLocationName'].isin(choose_body)
+    df_line = df_pvt[df_pvt_filtered]
+    # df_line_2 = df_pvt[df_pvt.isin({'MonitoringLocationName': [df_pvt.MonitoringLocationName.unique()[2:5]]})]
+    # df_line_2
     
     values_measure = list(df_pvt.columns[2:-3])
     choose_measure = st.sidebar.selectbox('Choose the trend you would like to look at:',
                                           values_measure
     )
     
+    if choose_measure == 'Temperature, water':
+        st.subheader("Water Temperature (°C)")
+        st.markdown('''
+                    Why is water temperature important?
+Water temperature is a key feature of any water body. It changes the water’s density, the water’s ability to support life, as well as its ability to absorb gases (like CO₂), and nutrients.
+
+Increases in water temperature can cause some chemicals to become “soluble”: think how quickly salt dissolves in hot water versus cold water. Algae blooms and other vegetation can also grow more quickly in warmer water. When these blooms decompose, they reduce the total amount of dissolved oxygen in the water, making it difficult for fish and other aquatic critters to breath.
+                    ''')
+    
+    elif choose_measure == 'pH':
+        st.subheader("pH")
+        st.markdown('''
+                    Why is pH important for water quality?
+pH stands for “potential for Hydrogen”. It is the measure of the acidity or alkalinity of water soluble substances.
+
+pH sets up the conditions for how easy it is for nutrients to be available and how easily things like heavy metals (toxicity for aquatic life) can dissolve in the water. Rivers and lakes generally range between 5 (acidic) and 9 (basic) on the pH scale. Whereas ocean water averages closer to 8.2 (slightly basic). Low pH can reduce how many fish eggs hatch and can make life difficult for fish and macroinvertebrates (the backbone of our water ecosystems).
+
+                    ''')
     
         
     choose_timeline = st.sidebar.selectbox('Choose timeline:',
@@ -172,78 +202,61 @@ if choose_visual == 'Line Graph':
             
         with col2:
             st.markdown(f'Name of water body: ')
-            st.text(str(df_line.MonitoringLocationName.unique()[0]))
+            try:
+                st.text(str(df_line.MonitoringLocationName.unique()[0]))
+            except IndexError:
+                st.text('Please pick a water body!')
             
             st.metric(f'Mean {choose_measure}: ', round(df_line[choose_measure].mean(),4))
             st.metric(f'Median {choose_measure}: ', round(df_line[choose_measure].median(),4))
             
-
-        # Create a Plotly figure
-        fig = px.line(df_line, x='ActivityStartDate', y=choose_measure, labels={choose_measure: f'{choose_measure}'}, title=f'Trend of {choose_measure} over the years')
-        fig.update_layout(
-            xaxis_title='Time',
-            yaxis_title=f'{choose_measure}',
-            legend_title='Legend'
-        )
-
-        # Add horizontal lines for 'Dissolved oxygen (DO)'
-        if choose_measure == 'Dissolved oxygen (DO)':
-            fig.add_shape(
-                dict(
-                    type='line',
-                    x0=df_line['ActivityStartDate'].min(),
-                    x1=df_line['ActivityStartDate'].max(),
-                    y0=4,
-                    y1=4,
-                    line=dict(color='orange', width=2, dash='solid'),
-                    name='Stress Zone'
-                )
+        everything = True
+        
+        if everything:
+            fig = px.line(df_line,
+              x="ActivityStartDate",
+              y=choose_measure,
+              color='MonitoringLocationName',
+              title=f'Trend of {choose_measure} over the years')
+            
+            fig.update_layout(
+                xaxis_title='Time',
+                yaxis_title=f'{choose_measure}',
+                legend_title='Legend'
             )
-
-            fig.add_shape(
-                dict(
-                    type='line',
-                    x0=df_line['ActivityStartDate'].min(),
-                    x1=df_line['ActivityStartDate'].max(),
-                    y0=1,
-                    y1=1,
-                    line=dict(color='red', width=2, dash='dashdot'),
-                    name='Danger Zone'
+            
+            # Add horizontal lines for 'Dissolved oxygen (DO)'
+            if choose_measure == 'Dissolved oxygen (DO)':
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=4,
+                        y1=4,
+                        line=dict(color='orange', width=2, dash='solid'),
+                        name='Stress Zone'
+                    )
                 )
-            )
 
-        # Rotate x-axis labels
-        fig.update_xaxes(tickangle=90)
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=1,
+                        y1=1,
+                        line=dict(color='red', width=2, dash='dashdot'),
+                        name='Danger Zone'
+                    )
+                )
 
-        # Show the plot
-        st.plotly_chart(fig)
-
-        #old matplotlib line graph for comparison purposes
-        fig, ax = plt.subplots(figsize=(20,8), dpi=150)
-        ax.plot(df_line.ActivityStartDate, df_line[choose_measure], label=f'{choose_measure}')
+            # Rotate x-axis labels
+            fig.update_xaxes(tickangle=90)
+            
+            st.plotly_chart(fig)
         
-        if choose_measure == 'Dissolved oxygen (DO)':
-            plt.axhline(y=4, color='orange', linestyle='-', label='Stress Zone')
-            plt.axhline(y=1, color='red', linestyle='-.', label='Danger Zone')
         
-        ax.set_title(f'Trend of {choose_measure} over the years',
-                    fontsize=20,
-                    fontweight=700,
-                    color='blue')
-        
-        ax.set_xlabel('Time',
-                    fontsize=20,
-                    fontweight=400)
-        
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=90)  
-        
-        ax.set_ylabel(f'{choose_measure}',
-                    fontsize=20,
-                    fontweight=400)
-        
-        plt.legend(title='Legend:', loc=[1.01,0.5])
-        
-        st.pyplot(fig)
     
     elif choose_timeline == 'Year, Month, Day':
         choose_year = st.sidebar.selectbox('Year:',
@@ -261,6 +274,20 @@ if choose_visual == 'Line Graph':
             if choose_year == y:
                 df_line_one_year = df_line_year[df_line_year.index == ]
         '''
+    
+    if choose_measure == 'Temperature, water':
+        st.subheader('How do you measure water temperature?')
+        st.markdown("""
+Water temperature is measured in degrees with a digital or analog thermometer. Make sure the thermometer is submerged at least 10 cm from the surface of the water. Hold under the water for 5 minutes. You’ll know it’s ready when the temperature has remained the same for at least 30 seconds.
+                    """)
+    
+    elif choose_measure == 'pH':
+        st.subheader('How do you measure pH in freshwater?')
+        st.markdown('''
+                    pH is measured on a logarithmic scale from 0-14, with 7 indicating neutral water. There are many tools for measuring pH, from expensive digital probes to easy to use test strips. We use test strips for pH. We’ve compared 15 types of test strips, and those made by Taylor have been shown to be the most accurate.
+
+For those looking for more accuracy, inexpensive pen-style meters have proven to be very accurate, but they need to be calibrated at least once a week. We’ve tried this one and it works well (however, you need to be careful not to dunk it too far in the water).
+                    ''')
     
 if choose_visual == 'Bar Graph':
     choose_bar_measure = st.sidebar.selectbox('Choose the trend you would like to look at on the bar graph:',
@@ -280,7 +307,7 @@ if choose_visual == 'Bar Graph':
         if yr == choose_year:
             df_bar = df_pvt[df_pvt['Year'] == yr]
     
-    df_bar
+    # df_bar
     
     descending = df_bar.groupby('MonitoringLocationName').mean().sort_values(choose_bar_measure, ascending=False)[:20]
     ascending = df_bar.groupby('MonitoringLocationName').mean().sort_values(choose_bar_measure, ascending=True)[:20]
