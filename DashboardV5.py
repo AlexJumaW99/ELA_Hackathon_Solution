@@ -129,7 +129,14 @@ len(df['MonitoringLocationName'].unique())
 
 df.info()
 
-
+## Threshold
+threshold_dict = {
+'Dissolved oxygen (DO)':6.5,
+'Ammonia':0.1,
+'Orthophosphate':0.04,
+'Temperature, water':23.5,
+# 'Temperature, air':23.5,
+}
 # df = pd.read_csv('cleaned_df.csv')
 # df_pvt = pd.read_csv('cleaned_df_pivot.csv')
 
@@ -148,8 +155,7 @@ choose_visual = st.sidebar.selectbox(
         'Line Graph',
         'Bar Graph',
         'Scatter Plot',
-        'Pie Chart',
-        'Histogram',
+        # 'Box Plot'
     )
 ) 
 
@@ -257,14 +263,7 @@ Increases in water temperature can cause some chemicals to become “soluble”:
                 legend_title='Legend'
             )
             
-            ## Threshold
-            threshold_dict = {
-            'Dissolved oxygen (DO)':6.5,
-            'Ammonia':0.1,
-            'Orthophosphate':0.04,
-            'Temperature, water':23.5,
-            # 'Temperature, air':23.5,
-            }
+            
             # Add horizontal lines for 'Dissolved oxygen (DO)'
             if choose_measure == 'Dissolved oxygen (DO)':
                 fig.add_shape(
@@ -372,7 +371,7 @@ Increases in water temperature can cause some chemicals to become “soluble”:
             st.plotly_chart(fig)
             # fig = px.line(df_line,
             #               x='Actitvity')
-        
+            
 
         #old matplotlib line graph for comparison purposes
         # fig, ax = plt.subplots(figsize=(20,8), dpi=150)
@@ -403,21 +402,176 @@ Increases in water temperature can cause some chemicals to become “soluble”:
         
     
     elif choose_timeline == 'Year, Month, Day':
-        choose_year = st.sidebar.selectbox('Year:',
-            tuple(df_line['Year'].unique())
-        )
-        df_line_year = df_line.groupby('Year').mean()
-        df_line_year = df_line_year.reset_index()
-        df_line_year.Year = df_line_year.Year.astype('int32') 
-        df_line_year.Year = pd.to_datetime(df_line_year.Year, format='%Y')
-        #df_line_year.Year = df_line_year.strftime('%Y')
-        df_line_year[['Year', choose_measure]]
+        # start_year_select_slider,end_year_select_slider = st.select_slider(
+        #         '',options=['2015','2016','2017','2018','2019','2020'],
+        #         value=('2015','2020')
+        #     )
+        start_year_select_slider,end_year_select_slider = st.select_slider(
+                '',options=['2015','2016','2017','2018','2019','2020','2021','2022'],
+                value=('2015','2022')
+            )
+        if start_year_select_slider == '2015':
+            start_year_select_slider = '2015-01-01'
+        elif start_year_select_slider == '2016':
+            start_year_select_slider = '2016-01-01'
+        elif start_year_select_slider == '2017':
+            start_year_select_slider = '2017-01-01'
+        elif start_year_select_slider == '2018':
+            start_year_select_slider = '2018-01-01'
+        elif start_year_select_slider == '2019':
+            start_year_select_slider = '2019-01-01'
+        elif start_year_select_slider == '2020':
+            start_year_select_slider = '2020-01-01'
+        elif start_year_select_slider == '2021':
+            start_year_select_slider = '2021-01-01'
+        elif start_year_select_slider == '2022':
+            start_year_select_slider = '2022-01-01'
+
+        if end_year_select_slider == '2015':
+            end_year_select_slider = '2015-12-31'
+        elif end_year_select_slider == '2016':
+            end_year_select_slider = '2016-12-31'
+        elif end_year_select_slider == '2017':
+            end_year_select_slider = '2017-12-31'
+        elif end_year_select_slider == '2018':
+            end_year_select_slider = '2018-12-31'
+        elif end_year_select_slider == '2019':
+            end_year_select_slider = '2019-12-31'
+        elif end_year_select_slider == '2020':
+            end_year_select_slider = '2020-12-31'
+        elif end_year_select_slider == '2021':
+            end_year_select_slider = '2021-12-31'
+        elif end_year_select_slider == '2022':
+            end_year_select_slider = '2022-12-31'
         
-        '''
-        for y in df_line['Year'].unique():
-            if choose_year == y:
-                df_line_one_year = df_line_year[df_line_year.index == ]
-        '''
+        # if df_line['ActivityStartDate'].min()
+        df_line = df_line[df_line.ActivityStartDate.between(start_year_select_slider,end_year_select_slider)]
+        fig = px.line(df_line,
+              x="ActivityStartDate",
+              y=choose_measure,
+              color='MonitoringLocationName',
+              title=f'Trend of {choose_measure} over the years')
+            
+        fig.update_layout(
+                xaxis_title='Time',
+                yaxis_title=f'{choose_measure}',
+                legend_title='Legend'
+            )
+ # Add horizontal lines for 'Dissolved oxygen (DO)'
+        if choose_measure == 'Dissolved oxygen (DO)':
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=threshold_dict['Dissolved oxygen (DO)'],
+                        y1=threshold_dict['Dissolved oxygen (DO)'],
+                        line=dict(color='orange', width=2, dash='solid'),
+                        name='Stress Zone'
+                    )
+                )
+
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=2,
+                        y1=2,
+                        line=dict(color='red', width=2, dash='dashdot'),
+                        name='Danger Zone'
+                    )
+                )
+            
+        if choose_measure == 'Ammonia':
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=threshold_dict['Ammonia'],
+                        y1=threshold_dict['Ammonia'],
+                        line=dict(color='orange', width=2, dash='solid'),
+                        name='Stress Zone'
+                    )
+                )
+
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=0.5,
+                        y1=0.5,
+                        line=dict(color='red', width=2, dash='dashdot'),
+                        name='Danger Zone'
+                    )
+                )
+        if choose_measure == 'Orthophosphate':
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=threshold_dict['Orthophosphate'],
+                        y1=threshold_dict['Orthophosphate'],
+                        line=dict(color='orange', width=2, dash='solid'),
+                        name='Stress Zone'
+                    )
+                )
+
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=0.1,
+                        y1=0.1,
+                        line=dict(color='red', width=2, dash='dashdot'),
+                        name='Danger Zone'
+                    )
+                )
+        if choose_measure == 'Temperature, water':
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=threshold_dict['Temperature, water'],
+                        y1=threshold_dict['Temperature, water'],
+                        line=dict(color='orange', width=2, dash='solid'),
+                        name='Stress Zone'
+                    )
+                )
+
+                fig.add_shape(
+                    dict(
+                        type='line',
+                        x0=df_line['ActivityStartDate'].min(),
+                        x1=df_line['ActivityStartDate'].max(),
+                        y0=30,
+                        y1=30,
+                        line=dict(color='red', width=2, dash='dashdot'),
+                        name='Danger Zone'
+                    )
+                )       
+        st.plotly_chart(fig)
+        
+        # choose_year = st.sidebar.selectbox('Year:',
+        #     tuple(df_line['Year'].unique())
+        # )
+        # df_line_year = df_line.groupby('Year').mean()
+        # df_line_year = df_line_year.reset_index()
+        # df_line_year.Year = df_line_year.Year.astype('int32') 
+        # df_line_year.Year = pd.to_datetime(df_line_year.Year, format='%Y')
+        # #df_line_year.Year = df_line_year.strftime('%Y')
+        # df_line_year[['Year', choose_measure]]
+        
+        # '''
+        # for y in df_line['Year'].unique():
+        #     if choose_year == y:
+        #         df_line_one_year = df_line_year[df_line_year.index == ]
+        # '''
     
     if choose_measure == 'Temperature, water':
         st.subheader('How do you measure water temperature?')
@@ -557,6 +711,8 @@ if choose_visual == 'Scatter Plot':
         
         # fig2 = sns.heatmap(df_pvt[df_pvt.MonitoringLocationName == choose_body].corr())
         # st.pyplot(fig2)
+
+# if choose_visual == 'Box Plot':
         
         
     
