@@ -6,6 +6,7 @@ import base64
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+from streamlit_folium import st_folium
 
 #read in cleaned and formatted datasets
 
@@ -444,13 +445,12 @@ Increases in water temperature can cause some chemicals to become “soluble”:
         elif end_year_select_slider == '2022':
             end_year_select_slider = '2022-12-31'
         
-        # if df_line['ActivityStartDate'].min()
         df_line = df_line[df_line.ActivityStartDate.between(start_year_select_slider,end_year_select_slider)]
         fig = px.line(df_line,
               x="ActivityStartDate",
               y=choose_measure,
               color='MonitoringLocationName',
-              title=f'Trend of {choose_measure} over the years')
+              title=f'Trend of {choose_measure} from {start_year_select_slider} to {end_year_select_slider}')
             
         fig.update_layout(
                 xaxis_title='Time',
