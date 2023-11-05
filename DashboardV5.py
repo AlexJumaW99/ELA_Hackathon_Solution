@@ -46,12 +46,12 @@ page_bg_image = """
 #inject CSS tag and add unsafe_allow_html
 # st.markdown(page_bg_image, unsafe_allow_html=True)
 
-from enum import Enum
-class ChartType(Enum):
+from enum import StrEnum
+class ChartType(StrEnum):
     LINE_GRAPH = "Line Graph"
     BAR_GRAPH = "Bar Graph"
     SCATTERPLOT = "Scatterplot"
-    
+
 # Declare variables
 
 # df = None
@@ -79,9 +79,11 @@ def clean_dataset(data_frame):
     return data_frame
 
 def get_pivot_table(data_frame):
-    df_pivot = data_frame.pivot_table(index=['MonitoringLocationName', 'ActivityStartDate'],
+    df_pivot = data_frame.pivot_table(
+        index=['MonitoringLocationName', 'ActivityStartDate'],
         columns='CharacteristicName',
         values='ResultValue')
+    # used to include index columns back to df
     df_pivot = df_pivot.reset_index()
     return df_pivot
 
@@ -105,8 +107,11 @@ def setup_data_sources():
     df = None
 
     if choose_df == values_df[0]:
-        df = pd.read_csv('ACAP_Saint_John_Community-Based_Water_Monitoring_Program.csv') #not gonna use parse dates for now
-
+        df = pd.read_csv(
+            'ACAP_Saint_John_Community-Based_Water_Monitoring_Program.csv',
+            parse_dates = ['ActivityStartDate']
+            )
+        
     elif choose_df == values_df[1]:
         df = pd.read_csv('ACAP_Saint_John_Nutrients_in_the_lower_Wolastoq_watershed.csv')
 
@@ -130,71 +135,95 @@ def setup_sidebar():
         label = 'Visuals:',
         options = (member for name, member in ChartType.__members__.items()),
         format_func = lambda x: ChartType(x).value,
-        on_change = select_chart,
-        args = (ChartType.LINE_GRAPH,)
         )
-
+    
+    # update ui based on selected chart
+    select_chart(selected_chart)
+    
 def select_chart(chart_type):
-    print(f"chart_type: {chart_type} {type(chart_type)}")
     if(chart_type == ChartType.LINE_GRAPH):
         setup_line_graph()
 
 def setup_line_graph():
-    print("setup")
-    df_pivot.head()
-    # ldf = pd.DataFrame(df_pivot)
-    # values_body = list(ldf.MonitoringLocationName.unique())
-    # print(values_body)
-    # choose_body = st.sidebar.selectbox('Choose a body of water:',
-    #                                 values_body
-    # )
+    list_bodies_of_water = df_pivot.MonitoringLocationName.unique()
 
-    # for w in list(df_pvt.MonitoringLocationName.unique()):
-    #     if w == choose_body:
-    #         df_line = df_pvt[df_pvt.MonitoringLocationName == w]
-    
-    # values_measure = list(df_pvt.columns[2:-3])
-    # choose_measure = st.sidebar.selectbox('Choose the trend you would like to look at:',
-    #                                       values_measure
-    # )
-    
-    
-        
-    # choose_timeline = st.sidebar.selectbox('Choose timeline:',
-    #                                        (
-    #                                            'All-Time',
-    #                                            'Year, Month, Day'
-    #                                        )                                      
-    # )
-    
-    # if choose_timeline == 'All-Time':
-        
-    #     #create streamlit columns that we will use later
-    #     col1, col2 = st.columns([2,2])
-        
-    #     #display the dataframe used to make the line graphs
-        
-    #     with col1:
-    #         st.metric(f'Max {choose_measure}: ', round(df_line[choose_measure].max(),4))
-    #         st.metric(f'Min {choose_measure}: ', round(df_line[choose_measure].min(),4))
-    #         # st.subheader('Table: ')
-    #         # df_line[['MonitoringLocationName', 'ActivityStartDate', choose_measure]]
-            
-    #     with col2:
-    #         st.markdown(f'Name of water body: ')
-    #         st.text(str(df_line.MonitoringLocationName.unique()[0]))
-            
-    #         st.metric(f'Mean {choose_measure}: ', round(df_line[choose_measure].mean(),4))
-    #         st.metric(f'Median {choose_measure}: ', round(df_line[choose_measure].median(),4))
-            
+    # create a multiselect for bodies of water
+    selected_bodies_of_water = st.sidebar.multiselect(
+        'Choose a body of water:',
+        list_bodies_of_water
+    )
 
-    #     # Create a Plotly figure
-    #     fig = px.line(df_line, x='ActivityStartDate', y=choose_measure, labels={choose_measure: f'{choose_measure}'}, title=f'Trend of {choose_measure} over the years')
-    #     fig.update_layout(
-    #         xaxis_title='Time',
-    #         yaxis_title=f'{choose_measure}',
-    #         legend_title='Legend'
-    #     )
+    # extract list of characteristic names from pivot table
+    list_characteristic_names = list(df_pivot.columns[2:])
+    selected_characteristic_name = st.sidebar.selectbox(
+            'Choose the trend you would like to look at:',
+            list_characteristic_names
+        )
+
+    # check if there are bodies of water selected
+    if selected_bodies_of_water:
+
+        # extract line graph data for values in selected_bodies_of_water
+        df_line = df_pivot.loc[df_pivot["MonitoringLocationName"].isin(selected_bodies_of_water)]
+
+        # extract min max dates from df
+        min_date = df_line['ActivityStartDate'].min()
+        max_date = df_line['ActivityStartDate'].max()
+
+        st.sidebar.subheader('Select date')
+        # st.sidebar.header("Please Filter here: ")
+        tab1, tab2, tab3 = st.sidebar.tabs(["Date Range", "Year", "Month"])
+
+        with tab1:
+            # show date range selector
+            selected_date_range = st.date_input(
+                "Select date range",
+                (min_date, max_date),
+                min_date,
+                max_date,
+                format="YYYY-MM-DD",
+            )
+
+        # create new df using date as index
+        df_line_filtered_dates = df_line.set_index(['ActivityStartDate'])
+        # filter df using date range
+        df_line_filtered_dates = df_line_filtered_dates.loc[selected_date_range[0]:selected_date_range[1]]
+        # reset index to make date searchable again
+        df_line_filtered_dates = df_line_filtered_dates.reset_index()
+            
+        # create streamlit columns that we will use later
+        col1, col2 = st.columns([2,2])
+        
+        # display the dataframe used to make the line graphs
+        
+        with col1:
+            st.metric(f'Max {selected_characteristic_name}: ', round(df_line_filtered_dates[selected_characteristic_name].max(), 4))
+            st.metric(f'Min {selected_characteristic_name}: ', round(df_line_filtered_dates[selected_characteristic_name].min(), 4))
+            st.subheader('Table: ')
+            # df_line_filtered_dates[['MonitoringLocationName', 'ActivityStartDate', selected_characteristic_name]]
+            
+        with col2:
+            st.markdown(f'Name of water body: ')
+            st.text(str(df_line.MonitoringLocationName.unique()[0]))
+            st.metric(f'Mean {selected_characteristic_name}: ', round(df_line_filtered_dates[selected_characteristic_name].mean(),4))
+            st.metric(f'Median {selected_characteristic_name}: ', round(df_line_filtered_dates[selected_characteristic_name].median(),4))
+                
+            # Create a Plotly figure
+            fig = px.line(
+                df_line_filtered_dates,
+                x = 'ActivityStartDate',
+                y = selected_characteristic_name,
+                color = 'MonitoringLocationName',
+                markers = True,
+                title = f'Trend of {selected_characteristic_name} over the years'
+                )
+            fig.update_layout(
+                xaxis_title = 'Time',
+                yaxis_title = f'{selected_characteristic_name}',
+                legend_title = 'MonitoringLocationName'
+            )
+        # Show the plot
+        st.plotly_chart(fig)
 
     #     # Add horizontal lines for 'Dissolved oxygen (DO)'
     #     if choose_measure == 'Dissolved oxygen (DO)':
@@ -209,7 +238,6 @@ def setup_line_graph():
     #                 name='Stress Zone'
     #             )
     #         )
-
     #         fig.add_shape(
     #             dict(
     #                 type='line',
@@ -224,9 +252,6 @@ def setup_line_graph():
 
     #     # Rotate x-axis labels
     #     fig.update_xaxes(tickangle=90)
-
-    #     # Show the plot
-    #     st.plotly_chart(fig)
 
     #     #old matplotlib line graph for comparison purposes
     #     fig, ax = plt.subplots(figsize=(20,8), dpi=150)
