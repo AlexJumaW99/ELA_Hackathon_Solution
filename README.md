@@ -9,9 +9,9 @@ Make sure you choose **Local** and then **HTTPS** before copying the URL you wil
 
 <br>
 
-2. Next, open your terminal and cd to the directory you would like to store the program in:
+2. Next, open your terminal and **cd** to the directory you would like to store the program in:
 ``` cd Desktop ```
-Afterward, type: 
+Afterward, type git clone, followed by the URL copied above: 
 ``` git clone https://github.com/AlexJumaW99/ELA_Hackathon_Solution.git ```
 
 <br>
@@ -19,4 +19,7 @@ Afterward, type:
 <img width="579" alt="Screenshot 2023-11-06 at 12 49 12 PM" src="https://github.com/AlexJumaW99/ELA_Hackathon_Solution/assets/50864725/9b23e7f0-ae5c-40de-ba9e-abe2cb0f87d8">
 
 The folder containing the program should now be on your local machine!
+
+## Step 2: Creating a virtual environment
+
 
