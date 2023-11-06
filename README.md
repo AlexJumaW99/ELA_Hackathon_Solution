@@ -22,5 +22,9 @@ The folder containing the program should now be on your local machine!
 
 ## Step 2: Creating a virtual environment
 ### Prerequisite: Ensure you have Python 3.5+ installed!
+1. Create a virtual environment by typing the following command on the terminal: ```python3 -m venv ela_project```
+2. Activate the virtual environment you just created: ```source ela_project/bin/activate```
+   
+<img width="573" alt="Screenshot 2023-11-06 at 1 58 57 PM" src="https://github.com/AlexJumaW99/ELA_Hackathon_Solution/assets/50864725/02ac4d8a-4fa4-403c-8069-aea9ac08e152">
 
 
