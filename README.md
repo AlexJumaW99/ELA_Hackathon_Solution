@@ -1,8 +1,8 @@
 # ELA_Hackathon_Solution
 ## How to run the program 👇🏿
 
-## 1. Cloning the file to your local machine
-First, click on the "Code" button at the top right section of the repository.
+## Step 1: Cloning the file to your local machine
+1. First, click on the "Code" button at the top right section of the repository.
 Make sure you switch to **HTTPS** before copying the URL you will use for cloning!
 
 
