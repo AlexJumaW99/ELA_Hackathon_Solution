@@ -21,5 +21,6 @@ Afterward, type git clone, followed by the URL copied above:
 The folder containing the program should now be on your local machine!
 
 ## Step 2: Creating a virtual environment
+### Prerequisite: Ensure you have Python 3.5+ installed!
 
 
