@@ -27,4 +27,5 @@ The folder containing the program should now be on your local machine!
    
 <img width="573" alt="Screenshot 2023-11-06 at 1 58 57 PM" src="https://github.com/AlexJumaW99/ELA_Hackathon_Solution/assets/50864725/02ac4d8a-4fa4-403c-8069-aea9ac08e152">
 
-
+3. While the virtual environment is activated, cd to the folder that contains the program: ```cd ELA_Hackathon_Solution```
+4. Then, install all the Python packages needed to run it by typing: ```pip install -r requirements.txt```
