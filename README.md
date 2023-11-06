@@ -11,8 +11,6 @@ Make sure you choose **Local** and then **HTTPS** before copying the URL you wil
 
 2. Next, open your terminal and cd to the directory you would like to store the program in:
 ``` cd Desktop ```
-
 <br>
-
 Afterward, type: 
 ``` git clone https://github.com/AlexJumaW99/ELA_Hackathon_Solution.git ```
