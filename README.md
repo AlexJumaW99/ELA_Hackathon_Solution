@@ -20,8 +20,11 @@ Afterward, type git clone, followed by the URL copied above:
 
 The folder containing the program should now be on your local machine!
 
-## Step 2: Creating a virtual environment and installing Python packages needed
-### Prerequisite: Ensure you have Python 3.5+ installed!
+## Step 2 (For Windows): Running the application
+Open the folder where the program was stored and double-click 
+
+## Step 2 (For MacOS): Creating a virtual environment and installing Python packages needed
+### Prerequisite: Ensure you have Python 3.5+ installed! https://www.python.org/downloads/ 
 1. Create a virtual environment by typing the following command on the terminal: ```python3 -m venv ela_project```
 2. Activate the virtual environment you just created: ```source ela_project/bin/activate```
    
