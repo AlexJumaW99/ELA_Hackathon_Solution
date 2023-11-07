@@ -5,7 +5,7 @@
 
 ## How to run the program 👇🏿
 ### On Windows (Recommended)
-## Step 1: Cloning the file to your local machine
+## Step 1: Clone file to your local machine
 1. First, click on the "Code" button at the top right section of the repository.
 Make sure you choose **Local** and then **HTTPS** before copying the URL you will use for cloning!
 <br>
@@ -24,8 +24,12 @@ Afterward, type git clone, followed by the URL copied above:
 
 The folder containing the program should now be on your local machine!
 
-## Step 2: Open folder and run the executable file
-Open the folder and double-click 
+## Step 2: Open the folder and run the executable file
+Open the folder and double-click ```run_this_file.exe```
+
+### On MacOS (Not recommended)
+## Step 1: Clone the file to your local machine
+Follow step 1 above 👆 
 ## Step 2: Running Application using PIP
 ### Prerequisite: Ensure you have Python 3.5+ installed! https://www.python.org/downloads/ 
 1. First, cd to the folder containing the program: ```cd ELA_Hackathon_Solution```
