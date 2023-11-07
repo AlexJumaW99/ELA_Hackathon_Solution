@@ -26,6 +26,9 @@ The folder containing the program should now be on your local machine!
 ## Step 2: Open the folder and run the executable file
 Open the folder and double-click ```run_this_file.exe```
 
+<br>
+<br>
+
 ### On MacOS (Not recommended)
 ## Step 1: Clone the file to your local machine
 Follow step 1 above 👆 
