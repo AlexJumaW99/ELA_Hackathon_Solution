@@ -1,11 +1,10 @@
-# ELA_Hackathon_Solution
+# ELA Hackathon Solution
+# How to run the program 👇🏿
 
-# Demo Video
+<br>
 
-
-## How to run the program 👇🏿
-### On Windows (Recommended)
-## Step 1: Clone file to your local machine
+# On Windows (Recommended)
+## Step 1: Clone the file to your local machine
 1. First, click on the "Code" button at the top right section of the repository.
 Make sure you choose **Local** and then **HTTPS** before copying the URL you will use for cloning!
 <br>
