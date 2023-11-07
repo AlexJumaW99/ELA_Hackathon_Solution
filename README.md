@@ -20,20 +20,20 @@ Afterward, type git clone, followed by the URL copied above:
 
 The folder containing the program should now be on your local machine!
 
-## Step 2 (For Windows): Running the application
-Open the folder where the program was stored and double-click 
-
-## Step 2 (For MacOS): Creating a virtual environment and installing Python packages needed
+## Step 2: Running Application using PIP
 ### Prerequisite: Ensure you have Python 3.5+ installed! https://www.python.org/downloads/ 
-1. Create a virtual environment by typing the following command on the terminal: ```python3 -m venv ela_project```
-2. Activate the virtual environment you just created: ```source ela_project/bin/activate```
+1. First, cd to the folder containing the program: ```cd ELA_Hackathon_Solution```
+2. Create a virtual environment by typing the following command on the terminal: ```python3 -m venv ela_project```
+3. Activate the virtual environment you just created: ```source ela_project/bin/activate```
    
 <img width="573" alt="Screenshot 2023-11-06 at 1 58 57 PM" src="https://github.com/AlexJumaW99/ELA_Hackathon_Solution/assets/50864725/02ac4d8a-4fa4-403c-8069-aea9ac08e152">
 
-3. While the virtual environment is activated, cd to the folder that contains the program: ```cd ELA_Hackathon_Solution```
-4. Then, install all the Python packages needed to run it by typing: ```pip install -r requirements.txt```
+4. Upgrade pip by typing: ```pip install ––upgrade pip```
+5. Then, install all the Python packages needed to run it by typing: ```pip3 install -r requirements.txt```
    
 <img width="584" alt="Screenshot 2023-11-06 at 2 04 45 PM" src="https://github.com/AlexJumaW99/ELA_Hackathon_Solution/assets/50864725/e0923bb7-6a87-424f-b768-0ddbf3c92bad">
+
+6. After installing pip, run the program by typing: ```streamlit run Dashboard.py```
 
 
 
