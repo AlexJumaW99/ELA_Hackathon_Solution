@@ -47,5 +47,11 @@ Follow step 1 above 👆
 
 6. After installing pip, run the program by typing: ```streamlit run Dashboard.py```
 
-
+# Credits
+We would like to appreciate the time and expertise of the following people:
+- Danton Coote
+- Yanna Polonia Gutierrez
+- Jon Ziprick
+- Nathan Anderson
+- Enoch A-Iyeh
 
