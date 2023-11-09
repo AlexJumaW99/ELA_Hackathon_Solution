@@ -22,21 +22,6 @@ Afterward, type git clone, followed by the URL copied above:
 
 The folder containing the program should now be on your local machine!
 
-## Step 2: Running Application using Anaconda (Recommended)
-### Prerequisites: 
-1. Ensure you have Python 3.5+ installed: https://www.python.org/downloads/
-2. Ensure you have Anaconda installed as well as Anaconda Navigator GUI: https://docs.anaconda.com/free/anaconda/install/index.html
-
-### Open Anaconda Navigator and create a virtual environment
-1. Click on "Environments" and afterward, click on "Create" at the bottom left
-<img width="1196" alt="Screenshot 2023-11-08 at 4 25 23 PM" src="https://github.com/AlexJumaW99/ELA_Hackathon_Solution/assets/50864725/3303ef68-0e3b-4495-8697-4e764d5f4dd6">
-
-2. Name your virtual environment and click create
-<img width="1179" alt="Screenshot 2023-11-08 at 4 35 17 PM" src="https://github.com/AlexJumaW99/ELA_Hackathon_Solution/assets/50864725/71542e52-2b28-4b3d-9406-89452fdd236a">
-
-
-
-
 ## Step 2: Running Application using PIP
 ### Prerequisite: Ensure you have Python 3.5+ installed! https://www.python.org/downloads/ 
 1. First, cd to the folder containing the program: ```cd ELA_Hackathon_Solution```
