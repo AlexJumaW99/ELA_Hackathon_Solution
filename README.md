@@ -1,7 +1,7 @@
 # ELA Hackathon Solution
 # How to run the program 👇🏿
 
-## Demo : https://ela2023-jwaxnvdxb8ny67bbsths97.streamlit.app/
+# Demo : https://ela2023-jwaxnvdxb8ny67bbsths97.streamlit.app/
 
 <br>
 
